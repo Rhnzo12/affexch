@@ -28,6 +28,11 @@ import {
   DropdownMenuSeparator,
 } from "./components/ui/dropdown-menu";
 import { Settings as SettingsIcon, ChevronDown, LogOut, User } from "lucide-react";
+import logoUrl from "./assets/logo.png";
+
+const hideOnError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+  e.currentTarget.style.display = "none";
+};
 import { proxiedSrc } from "./lib/image";
 import NotFound from "./pages/not-found";
 import Landing from "./pages/landing";
@@ -131,7 +136,7 @@ function AuthenticatedLayout({ user, unreadCount, onLogout, children, hideHeader
                     {/* AFFEXCH brand chip — mobile only for creators (their sidebar shows it on desktop);
                         admins see no sidebar so we render the brand chip on every breakpoint. */}
                     <Link href="/" className={`${isAdmin ? "flex" : "md:hidden flex"} items-center gap-1.5 min-w-0 shrink-0`}>
-                      <img src="/logo.png" alt="AffiliateXchange" className="h-6 w-6 rounded-md object-cover shrink-0 fx-logo-glow" />
+                      <img src={logoUrl} alt="AffiliateXchange" onError={hideOnError} className="h-6 w-6 rounded-md object-cover shrink-0 fx-logo-glow" />
                       <span className="font-bold text-sm tracking-wider text-primary truncate fx-glitch">AFFEXCH</span>
                     </Link>
                   </div>

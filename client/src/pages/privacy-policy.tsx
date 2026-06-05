@@ -2,6 +2,7 @@ import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
+import logoUrl from "../assets/logo.png";
 
 export default function PrivacyPolicy() {
   return (
@@ -11,7 +12,7 @@ export default function PrivacyPolicy() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <Link href="/">
             <a className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <img src="/logo.png" alt="AffiliateXchange Logo" className="h-8 w-8 rounded-md object-cover" />
+              <img src={logoUrl} alt="AffiliateXchange Logo" className="h-8 w-8 rounded-md object-cover" />
               <span className="text-xl font-bold">AFFEXCH</span>
             </a>
           </Link>
@@ -461,7 +462,7 @@ export default function PrivacyPolicy() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-2">
-              <img src="/logo.png" alt="AffiliateXchange Logo" className="h-8 w-8 rounded-md object-cover" />
+              <img src={logoUrl} alt="AffiliateXchange Logo" className="h-8 w-8 rounded-md object-cover" />
               <span className="font-bold">AFFEXCH</span>
             </div>
             <div className="flex gap-6 text-sm">

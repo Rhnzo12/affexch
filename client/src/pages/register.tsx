@@ -14,6 +14,11 @@ import { Link } from "wouter";
 import { GenericErrorDialog } from "../components/GenericErrorDialog";
 import { motion } from "framer-motion";
 import { registrationSchema, validatePasswordComplexity } from "../../../shared/validation";
+import logoUrl from "../assets/logo.png";
+
+const hideOnError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+  e.currentTarget.style.display = "none";
+};
 
 type RegisterForm = z.infer<typeof registrationSchema>;
 
@@ -110,7 +115,7 @@ export default function Register() {
       {/* Header */}
       <header className="p-5 sm:p-6">
         <Link href="/" className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <img src="/logo.png" alt="AffiliateXchange Logo" className="h-8 w-8 rounded-md object-cover neon-glow" />
+          <img src={logoUrl} alt="AffiliateXchange Logo" onError={hideOnError} className="h-8 w-8 rounded-md object-cover neon-glow" />
           <span className="text-base sm:text-lg font-bold neon-text mono tracking-wide">AFFEXCH</span>
         </Link>
       </header>
@@ -139,8 +144,9 @@ export default function Register() {
               <div className="text-center mb-6">
                 <div className="flex justify-center mb-4">
                   <img
-                    src="/logo.png"
+                    src={logoUrl}
                     alt="AffiliateXchange Logo"
+                    onError={hideOnError}
                     className="h-14 w-14 sm:h-16 sm:w-16 rounded-xl object-cover neon-glow-strong"
                   />
                 </div>

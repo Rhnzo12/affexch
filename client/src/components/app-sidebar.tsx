@@ -44,6 +44,11 @@ import {
   MapPin,
   Wallet,
 } from "lucide-react";
+import logoUrl from "../assets/logo.png";
+
+const hideOnError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+  e.currentTarget.style.display = "none";
+};
 
 type LeafItem = {
   title: string;
@@ -147,7 +152,7 @@ export function AppSidebar() {
           />
           <Link href="/" onClick={handleNavClick}>
             <div className="flex items-center gap-1.5 cursor-pointer">
-              <img src="/logo.png" alt="AffiliateXchange Logo" className="h-6 w-6 rounded-md object-cover shrink-0 fx-logo-glow" />
+              <img src={logoUrl} alt="AffiliateXchange Logo" onError={hideOnError} className="h-6 w-6 rounded-md object-cover shrink-0 fx-logo-glow" />
               <span className="font-bold text-sm tracking-wider text-primary group-data-[collapsible=icon]:hidden fx-glitch">AFFEXCH</span>
             </div>
           </Link>

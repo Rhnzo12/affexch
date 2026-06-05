@@ -1,4 +1,9 @@
 import { useEffect, useState } from "react";
+import logoUrl from "../assets/logo.png";
+
+const hideOnError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+  e.currentTarget.style.display = "none";
+};
 
 // AFFEXCH loading screen — same look as the landing-page boot sequence.
 // Use this wherever the app needs a heavy initial load (auth check, first
@@ -56,7 +61,7 @@ export function AffexchBootLoader({
     >
       <div className="affx-boot__inner">
         <div className="affx-boot__brand">
-          <img src="/logo.png" alt="AffiliateXchange" className="affx-boot__logo" />
+          <img src={logoUrl} alt="AffiliateXchange" onError={hideOnError} className="affx-boot__logo" />
           AFFEXCH
         </div>
         <div className="affx-boot__log">

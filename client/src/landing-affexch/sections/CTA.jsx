@@ -4,6 +4,7 @@ import { scrollToId } from "../lib/scroll";
 import { useOnboarding } from "../onboarding/OnboardingContext";
 import { useAuth } from "../auth/AuthContext";
 import "./CTA.css";
+import logoUrl from "../../assets/logo.png";
 
 const FOOT_LINKS = [
   { label: "PRODUCTS", to: "neural" },
@@ -51,7 +52,7 @@ export default function CTA() {
 
       <footer className="foot">
         <div className="foot__brand">
-          <img src="/logo.png" alt="AffiliateXchange" className="foot__logo" />
+          <img src={logoUrl} alt="AffiliateXchange" className="foot__logo" />
           <span>AFFEXCH</span>
         </div>
         <nav className="foot__nav">

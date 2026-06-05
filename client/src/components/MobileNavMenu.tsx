@@ -18,6 +18,11 @@ import {
   Wallet,
   X,
 } from "lucide-react";
+import logoUrl from "../assets/logo.png";
+
+const hideOnError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+  e.currentTarget.style.display = "none";
+};
 import { useAuth } from "../hooks/useAuth";
 import { cn } from "../lib/utils";
 import { ChangeCityModal } from "./ChangeCityModal";
@@ -128,7 +133,7 @@ export function MobileNavMenu({ open, onClose }: MobileNavMenuProps) {
         )}
       >
         <div className="flex items-center gap-2">
-          <img src="/logo.png" alt="AFFEXCH" className="h-7 w-7 rounded-md object-cover fx-logo-glow" />
+          <img src={logoUrl} alt="AFFEXCH" onError={hideOnError} className="h-7 w-7 rounded-md object-cover fx-logo-glow" />
           <span className="font-bold text-base tracking-wider text-primary fx-glitch">AFFEXCH</span>
         </div>
         <button

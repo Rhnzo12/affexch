@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { scrollToId } from "../lib/scroll";
 import { useOnboarding } from "../onboarding/OnboardingContext";
 import { useAuth } from "../auth/AuthContext";
+import logoUrl from "../../assets/logo.png";
 
 const NAV = [
   { label: "HOME", to: "top" },
@@ -37,7 +38,7 @@ export default function Frame() {
 
       <div className="topbar">
         <button className="brand" onClick={() => go("top")}>
-          <img src="/logo.png" alt="AFFEXCH" className="brand__logo" />
+          <img src={logoUrl} alt="AFFEXCH" className="brand__logo" />
           <span>AFFEXCH</span>
         </button>
         <div className="topbar__actions">

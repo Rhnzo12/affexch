@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./Boot.css";
+import logoUrl from "../../assets/logo.png";
 
 const LINES = [
   "AffiliateXchange_OS // v2.0.4 — initializing",
@@ -34,7 +35,7 @@ export default function Boot() {
     <div className={"boot" + (done ? " boot--out" : "")}>
       <div className="boot__inner">
         <div className="boot__brand">
-          <img src="/logo.png" alt="AffiliateXchange" className="boot__logo" /> AFFEXCH
+          <img src={logoUrl} alt="AffiliateXchange" className="boot__logo" /> AFFEXCH
         </div>
         <div className="boot__log">
           {LINES.slice(0, shown).map((l, i) => (
