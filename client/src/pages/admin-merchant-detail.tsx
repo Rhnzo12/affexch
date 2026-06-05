@@ -8,7 +8,6 @@ import { Badge } from "../components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "../components/ui/dialog";
 import { Textarea } from "../components/ui/textarea";
-import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Separator } from "../components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table";
@@ -22,7 +21,6 @@ import {
   PlayCircle,
   ExternalLink,
   FileText,
-  DollarSign,
   Users,
   TrendingUp,
   TrendingDown,
@@ -40,7 +38,6 @@ import {
   Code,
   Server,
   Clock,
-  Percent,
   AlertTriangle,
   Info,
   Shield,
@@ -98,20 +95,6 @@ type CompanyDetail = {
   };
 };
 
-type CompanyFeeInfo = {
-  companyId: string;
-  companyName: string;
-  customPlatformFeePercentage: number | null;
-  customPlatformFeeDisplay: string | null;
-  defaultPlatformFeePercentage: number;
-  defaultPlatformFeeDisplay: string;
-  processingFeePercentage: number;
-  processingFeeDisplay: string;
-  effectivePlatformFee: number;
-  effectiveTotalFee: number;
-  isUsingCustomFee: boolean;
-};
-
 type RiskIndicator = {
   type: 'warning' | 'info' | 'success';
   category: string;
@@ -139,7 +122,7 @@ type CompanyRiskInfo = {
   };
 };
 
-export default function AdminCompanyDetail() {
+export default function AdminMerchantDetail() {
   const { toast } = useToast();
   const { isAuthenticated, isLoading } = useAuth();
   const [, navigate] = useLocation();
@@ -152,8 +135,6 @@ export default function AdminCompanyDetail() {
   const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
   const [activeTab, setActiveTab] = useState("details");
-  const [isFeeDialogOpen, setIsFeeDialogOpen] = useState(false);
-  const [feeInputValue, setFeeInputValue] = useState("");
   const [isPdfViewerOpen, setIsPdfViewerOpen] = useState(false);
   const [currentDocumentUrl, setCurrentDocumentUrl] = useState("");
   const [currentDocumentName, setCurrentDocumentName] = useState("");
@@ -285,32 +266,6 @@ export default function AdminCompanyDetail() {
     enabled: isAuthenticated && !!companyId && activeTab === "offers",
   });
 
-  // Fetch company payments
-  const { data: payments = [], isLoading: loadingPayments } = useQuery<any[]>({
-    queryKey: [`/api/admin/companies/${companyId}/payments`],
-    queryFn: async () => {
-      const response = await fetch(`/api/admin/companies/${companyId}/payments`, {
-        credentials: "include",
-      });
-      if (!response.ok) throw new Error("Failed to fetch company payments");
-      return response.json();
-    },
-    enabled: isAuthenticated && !!companyId && activeTab === "payments",
-  });
-
-  // Fetch creator relationships
-  const { data: relationships = [], isLoading: loadingRelationships } = useQuery<any[]>({
-    queryKey: [`/api/admin/companies/${companyId}/creators`],
-    queryFn: async () => {
-      const response = await fetch(`/api/admin/companies/${companyId}/creators`, {
-        credentials: "include",
-      });
-      if (!response.ok) throw new Error("Failed to fetch company creators");
-      return response.json();
-    },
-    enabled: isAuthenticated && !!companyId && activeTab === "creators",
-  });
-
   // Fetch verification documents
   const { data: verificationDocuments = [] } = useQuery<VerificationDocument[]>({
     queryKey: [`/api/admin/companies/${companyId}/verification-documents`],
@@ -319,19 +274,6 @@ export default function AdminCompanyDetail() {
         credentials: "include",
       });
       if (!response.ok) throw new Error("Failed to fetch verification documents");
-      return response.json();
-    },
-    enabled: isAuthenticated && !!companyId,
-  });
-
-  // Fetch company fee info
-  const { data: feeInfo, isLoading: loadingFeeInfo } = useQuery<CompanyFeeInfo>({
-    queryKey: [`/api/admin/companies/${companyId}/fee`],
-    queryFn: async () => {
-      const response = await fetch(`/api/admin/companies/${companyId}/fee`, {
-        credentials: "include",
-      });
-      if (!response.ok) throw new Error("Failed to fetch company fee info");
       return response.json();
     },
     enabled: isAuthenticated && !!companyId,
@@ -447,52 +389,6 @@ export default function AdminCompanyDetail() {
         open: true,
         title: "Error",
         description: error.message || "Failed to reactivate merchant",
-      });
-    },
-  });
-
-  const updateFeeMutation = useMutation({
-    mutationFn: async (feePercentage: number) => {
-      const response = await apiRequest("PATCH", `/api/admin/companies/${companyId}/fee`, {
-        platformFeePercentage: feePercentage,
-      });
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/admin/companies/${companyId}/fee`] });
-      toast({
-        title: "Success",
-        description: "Custom platform fee updated successfully",
-      });
-      setIsFeeDialogOpen(false);
-      setFeeInputValue("");
-    },
-    onError: (error: any) => {
-      setErrorDialog({
-        open: true,
-        title: "Error",
-        description: error.message || "Failed to update fee",
-      });
-    },
-  });
-
-  const clearFeeMutation = useMutation({
-    mutationFn: async () => {
-      const response = await apiRequest("DELETE", `/api/admin/companies/${companyId}/fee`);
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/admin/companies/${companyId}/fee`] });
-      toast({
-        title: "Success",
-        description: "Custom platform fee cleared. Using default fee.",
-      });
-    },
-    onError: (error: any) => {
-      setErrorDialog({
-        open: true,
-        title: "Error",
-        description: error.message || "Failed to clear custom fee",
       });
     },
   });
@@ -672,8 +568,6 @@ export default function AdminCompanyDetail() {
           <TabsList>
             <TabsTrigger value="details">Details</TabsTrigger>
             <TabsTrigger value="offers">Offers ({offers.length})</TabsTrigger>
-            <TabsTrigger value="payments">Payments ({payments.length})</TabsTrigger>
-            <TabsTrigger value="creators">Creators ({relationships.length})</TabsTrigger>
           </TabsList>
 
           {/* Details Tab */}
@@ -801,77 +695,6 @@ export default function AdminCompanyDetail() {
                   )}
                 </CardContent>
               </Card>
-
-              {/* Platform Fee Information */}
-              {feeInfo && (
-                <Card className="border-card-border">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 justify-between">
-                      <div className="flex items-center gap-2">
-                        <Percent className="h-5 w-5" />
-                        Platform Fees
-                      </div>
-                      {feeInfo.isUsingCustomFee && (
-                        <Badge variant="outline" className="text-blue-600 border-blue-300">
-                          Custom Fee
-                        </Badge>
-                      )}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <div className="text-xs text-muted-foreground mb-1">Platform Fee</div>
-                        <div className="text-2xl font-bold">
-                          {feeInfo.customPlatformFeeDisplay || feeInfo.defaultPlatformFeeDisplay}
-                        </div>
-                        {feeInfo.isUsingCustomFee && (
-                          <div className="text-xs text-muted-foreground">
-                            Default: {feeInfo.defaultPlatformFeeDisplay}
-                          </div>
-                        )}
-                      </div>
-                      <div>
-                        <div className="text-xs text-muted-foreground mb-1">Processing Fee</div>
-                        <div className="text-2xl font-bold">{feeInfo.processingFeeDisplay}</div>
-                        <div className="text-xs text-muted-foreground">Stripe</div>
-                      </div>
-                    </div>
-                    <Separator />
-                    <div>
-                      <div className="text-xs text-muted-foreground mb-1">Total Fees</div>
-                      <div className="text-3xl font-bold text-primary">
-                        {(feeInfo.effectiveTotalFee * 100).toFixed(2)}%
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          if (feeInfo.customPlatformFeePercentage !== null) {
-                            setFeeInputValue((feeInfo.customPlatformFeePercentage * 100).toFixed(2));
-                          }
-                          setIsFeeDialogOpen(true);
-                        }}
-                      >
-                        <DollarSign className="h-4 w-4 mr-2" />
-                        {feeInfo.isUsingCustomFee ? 'Update' : 'Set'} Custom Fee
-                      </Button>
-                      {feeInfo.isUsingCustomFee && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => clearFeeMutation.mutate()}
-                          disabled={clearFeeMutation.isPending}
-                        >
-                          Clear Custom Fee
-                        </Button>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
 
               {/* Risk Assessment */}
               {riskInfo && (
@@ -1280,112 +1103,6 @@ export default function AdminCompanyDetail() {
             </Card>
           </TabsContent>
 
-          {/* Payments Tab */}
-          <TabsContent value="payments">
-            <Card className="border-card-border">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <DollarSign className="h-5 w-5" />
-                  Payment History ({payments.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {loadingPayments ? (
-                  <div className="text-center py-8 text-muted-foreground">Loading payments...</div>
-                ) : payments.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">No payments yet</div>
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Creator</TableHead>
-                        <TableHead>Offer</TableHead>
-                        <TableHead>Amount</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Date</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {payments.map((payment) => (
-                        <TableRow key={payment.id}>
-                          <TableCell>
-                            @{payment.creator?.username || 'Unknown'}
-                          </TableCell>
-                          <TableCell>{payment.offer?.title || 'Unknown Offer'}</TableCell>
-                          <TableCell className="font-medium">
-                            ${(Number(payment.netAmount || payment.amount || 0) / 100).toFixed(2)}
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant={payment.status === 'completed' ? 'default' : 'secondary'}>
-                              {payment.status}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            {new Date(payment.createdAt).toLocaleDateString()}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Creator Relationships Tab */}
-          <TabsContent value="creators">
-            <Card className="border-card-border">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  Creator Relationships ({relationships.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {loadingRelationships ? (
-                  <div className="text-center py-8 text-muted-foreground">Loading relationships...</div>
-                ) : relationships.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">No creator relationships yet</div>
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Creator</TableHead>
-                        <TableHead>Offer</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Applied</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {relationships.map((relationship) => (
-                        <TableRow key={relationship.id}>
-                          <TableCell>
-                            <div>
-                              <div className="font-medium">
-                                @{relationship.creator?.username || 'Unknown'}
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                {relationship.creator?.email}
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell>{relationship.offer?.title || 'Unknown Offer'}</TableCell>
-                          <TableCell>
-                            <Badge variant={relationship.status === 'approved' ? 'default' : 'secondary'}>
-                              {relationship.status}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            {new Date(relationship.createdAt).toLocaleDateString()}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
         </Tabs>
       </div>
 
@@ -1430,77 +1147,6 @@ export default function AdminCompanyDetail() {
               disabled={!rejectionReason.trim() || rejectMutation.isPending}
             >
               {rejectMutation.isPending ? "Rejecting..." : "Reject Merchant"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Custom Fee Dialog */}
-      <Dialog open={isFeeDialogOpen} onOpenChange={setIsFeeDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Set Custom Platform Fee</DialogTitle>
-            <DialogDescription>
-              Set a custom platform fee percentage for this company. This will override the default platform fee and apply to all future payments.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="feePercentage">Platform Fee Percentage</Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  id="feePercentage"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  max="50"
-                  placeholder="e.g., 2.5"
-                  value={feeInputValue}
-                  onChange={(e) => setFeeInputValue(e.target.value)}
-                  className="flex-1"
-                />
-                <span className="text-muted-foreground">%</span>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Enter a value between 0 and 50. The default platform fee is {feeInfo?.defaultPlatformFeeDisplay || '4%'}.
-              </p>
-            </div>
-            {feeInputValue && !isNaN(parseFloat(feeInputValue)) && (
-              <div className="p-4 bg-muted/50 rounded-lg">
-                <div className="text-sm text-muted-foreground mb-2">Preview:</div>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div>Platform Fee:</div>
-                  <div className="font-medium">{parseFloat(feeInputValue).toFixed(2)}%</div>
-                  <div>Processing Fee:</div>
-                  <div className="font-medium">3% (Stripe)</div>
-                  <div>Total Fee:</div>
-                  <div className="font-bold text-primary">{(parseFloat(feeInputValue) + 3).toFixed(2)}%</div>
-                  <div>Creator Receives:</div>
-                  <div className="font-bold text-green-600">{(100 - parseFloat(feeInputValue) - 3).toFixed(2)}%</div>
-                </div>
-              </div>
-            )}
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setIsFeeDialogOpen(false);
-                setFeeInputValue("");
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={() => {
-                const feeValue = parseFloat(feeInputValue);
-                if (!isNaN(feeValue) && feeValue >= 0 && feeValue <= 50) {
-                  updateFeeMutation.mutate(feeValue / 100); // Convert from percentage to decimal
-                }
-              }}
-              disabled={!feeInputValue || isNaN(parseFloat(feeInputValue)) || parseFloat(feeInputValue) < 0 || parseFloat(feeInputValue) > 50 || updateFeeMutation.isPending}
-            >
-              {updateFeeMutation.isPending ? "Saving..." : "Save Custom Fee"}
             </Button>
           </DialogFooter>
         </DialogContent>

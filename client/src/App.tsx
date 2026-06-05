@@ -54,13 +54,14 @@ import ProfileManagement from "./pages/profile-management";
 import Notifications from "./pages/notifications";
 import NotificationDetail from "./pages/notification-detail";
 // Company-role portal pages removed — out of scope for AFFEXCH (handoff §3).
-// Admin still views companies as vendor records via AdminCompanies/AdminCompanyDetail.
+// Admin still views companies as vendor records via AdminCompanies/AdminMerchantDetail.
 import AdminDashboard from "./pages/admin-dashboard";
 import AdminCompanies from "./pages/admin-companies";
-import AdminCompanyDetail from "./pages/admin-company-detail";
+import AdminMerchantDetail from "./pages/admin-merchant-detail";
 import AdminOffers from "./pages/admin-offers";
 import AdminOfferDetail from "./pages/admin-offer-detail";
 import AdminCreators from "./pages/admin-creators";
+import AdminCreatorDetail from "./pages/admin-creator-detail";
 import AdminAuditLogs from "./pages/admin-audit-logs";
 import AdminContentLinks from "./pages/admin-content-links";
 import AdminAnalytics from "./pages/admin-analytics";
@@ -336,7 +337,7 @@ function ProtectedRouter() {
               <Route path="/admin" component={AdminDashboard} />
               <Route path="/admin/dashboard" component={AdminDashboard} />
               <Route path="/admin/merchants" component={AdminCompanies} />
-              <Route path="/admin/merchants/:id" component={AdminCompanyDetail} />
+              <Route path="/admin/merchants/:id" component={AdminMerchantDetail} />
               {/* Legacy URLs from the pre-merchant rename — redirect so any
                   bookmark or in-app link still works. */}
               <Route path="/admin/companies">{() => { window.location.replace("/admin/merchants"); return null; }}</Route>
@@ -347,6 +348,7 @@ function ProtectedRouter() {
               <Route path="/admin/offers/:id" component={AdminOfferDetail} />
               <Route path="/admin-offer-detail/:id" component={AdminOfferDetail} />
               <Route path="/admin/creators" component={AdminCreators} />
+              <Route path="/admin/creators/:id" component={AdminCreatorDetail} />
               <Route path="/admin/content-links" component={AdminContentLinks} />
               <Route path="/admin/audit-logs" component={AdminAuditLogs} />
               <Route path="/admin/payouts" component={AdminPayoutsPage} />
