@@ -25,7 +25,6 @@ import {
   Ban,
   Loader2,
 } from "lucide-react";
-import { SiYoutube, SiTiktok, SiInstagram } from "react-icons/si";
 import { apiRequest, queryClient } from "../lib/queryClient";
 import { TopNavBar } from "../components/TopNavBar";
 import { useLocation, useRoute } from "wouter";
@@ -47,13 +46,6 @@ type CreatorRow = {
     tiktokFollowers: number | null;
     instagramFollowers: number | null;
   } | null;
-};
-
-const formatFollowers = (n: number | null | undefined) => {
-  if (!n) return null;
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
-  return String(n);
 };
 
 const formatDate = (d: string | null | undefined) => {
@@ -231,18 +223,6 @@ export default function AdminCreatorDetail() {
     );
   }
 
-  const socials = [
-    creator.profile?.youtubeFollowers
-      ? { icon: SiYoutube, color: "text-red-500", label: "YouTube", value: formatFollowers(creator.profile.youtubeFollowers) }
-      : null,
-    creator.profile?.tiktokFollowers
-      ? { icon: SiTiktok, color: "text-foreground", label: "TikTok", value: formatFollowers(creator.profile.tiktokFollowers) }
-      : null,
-    creator.profile?.instagramFollowers
-      ? { icon: SiInstagram, color: "text-pink-500", label: "Instagram", value: formatFollowers(creator.profile.instagramFollowers) }
-      : null,
-  ].filter((s): s is NonNullable<typeof s> => s !== null);
-
   return (
     <div className="min-h-screen bg-background">
       <TopNavBar />
@@ -309,61 +289,36 @@ export default function AdminCreatorDetail() {
           </CardContent>
         </Card>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Account</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-start gap-3">
-                <Mail className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
-                <div className="min-w-0">
-                  <p className="text-xs text-muted-foreground">Email</p>
-                  <p className="text-sm break-all" data-testid="text-creator-email">{creator.email}</p>
-                </div>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Account</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-start gap-3">
+              <Mail className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+              <div className="min-w-0">
+                <p className="text-xs text-muted-foreground">Email</p>
+                <p className="text-sm break-all" data-testid="text-creator-email">{creator.email}</p>
               </div>
-              <Separator />
-              <div className="flex items-start gap-3">
-                <UserIcon className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
-                <div className="min-w-0">
-                  <p className="text-xs text-muted-foreground">Username</p>
-                  <p className="text-sm">{creator.username}</p>
-                </div>
+            </div>
+            <Separator />
+            <div className="flex items-start gap-3">
+              <UserIcon className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+              <div className="min-w-0">
+                <p className="text-xs text-muted-foreground">Username</p>
+                <p className="text-sm">{creator.username}</p>
               </div>
-              <Separator />
-              <div className="flex items-start gap-3">
-                <Calendar className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
-                <div className="min-w-0">
-                  <p className="text-xs text-muted-foreground">Joined</p>
-                  <p className="text-sm">{formatDate(creator.createdAt)}</p>
-                </div>
+            </div>
+            <Separator />
+            <div className="flex items-start gap-3">
+              <Calendar className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+              <div className="min-w-0">
+                <p className="text-xs text-muted-foreground">Joined</p>
+                <p className="text-sm">{formatDate(creator.createdAt)}</p>
               </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Social Reach</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {socials.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No social platforms linked.</p>
-              ) : (
-                <div className="space-y-3">
-                  {socials.map((s) => (
-                    <div key={s.label} className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <s.icon className={`h-4 w-4 ${s.color}`} />
-                        <span className="text-sm">{s.label}</span>
-                      </div>
-                      <span className="text-sm font-medium">{s.value} followers</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {creator.profile?.bio && (
           <Card>
